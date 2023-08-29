@@ -1,8 +1,9 @@
-version: '3.8'
+version: "3.8"
 
 services:
   redis_db:
-    image: 'redis:alpine'
+    image: "redis:alpine"
+    restart: always
     ports:
       - 6379:6379
     container_name: redis_db
