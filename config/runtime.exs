@@ -79,7 +79,10 @@ config :block_scout_web, :footer,
   forum_link_enabled: ConfigHelper.parse_bool_env_var("FOOTER_FORUM_LINK_ENABLED"),
   forum_link: System.get_env("FOOTER_FORUM_LINK", "https://forum.poa.network/c/blockscout"),
   telegram_link_enabled: ConfigHelper.parse_bool_env_var("FOOTER_TELEGRAM_LINK_ENABLED"),
-  telegram_link: System.get_env("FOOTER_TELEGRAM_LINK"),
+  website_link: System.get_env("FOOTER_WEBSITE_LINK", "https://numbersprotocol.io"),
+  twitter_link: System.get_env("FOOTER_TWITTER_LINK", "https://twitter.com/numbersprotocol"),
+  telegram_link: System.get_env("FOOTER_TELEGRAM_LINK", "https://t.me/numbersprotocol"),
+  gitbook_link: System.get_env("FOOTER_GITBOOK_LINK", "https://docs.numbersprotocol.io/introduction/numbers-protocol"),
   link_to_other_explorers: ConfigHelper.parse_bool_env_var("FOOTER_LINK_TO_OTHER_EXPLORERS"),
   other_explorers: System.get_env("FOOTER_OTHER_EXPLORERS", "")
 
