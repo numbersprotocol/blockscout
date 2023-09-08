@@ -1,5 +1,11 @@
 version: "3.8"
 
+x-logging: &default-logging
+  options:
+    max-size: "10m"
+    max-file: "10"
+  driver: json-file
+
 services:
   blockscout:
     depends_on:
@@ -17,6 +23,7 @@ services:
         CACHE_ADDRESS_WITH_BALANCES_UPDATE_INTERVAL: ""
         ADMIN_PANEL_ENABLED: ""
         RELEASE_VERSION: 5.2.2
+    logging: *default-logging
     restart: always
     stop_grace_period: 5m
     container_name: "blockscout"
@@ -34,13 +41,16 @@ services:
     extends:
       file: ./services/docker-compose-smart-contract-verifier.yml
       service: smart-contract-verifier
+    logging: *default-logging
 
   visualizer:
     extends:
       file: ./services/docker-compose-visualizer.yml
       service: visualizer
+    logging: *default-logging
 
   sig-provider:
     extends:
       file: ./services/docker-compose-sig-provider.yml
       service: sig-provider
+    logging: *default-logging

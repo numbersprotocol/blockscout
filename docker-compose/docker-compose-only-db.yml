@@ -1,12 +1,20 @@
 version: "3.8"
 
+x-logging: &default-logging
+  options:
+    max-size: "10m"
+    max-file: "10"
+  driver: json-file
+
 services:
   redis_db:
     extends:
       file: ./services/docker-compose-redis.yml
       service: redis_db
+    logging: *default-logging
 
   db:
     extends:
       file: ./services/docker-compose-db.yml
       service: db
+    logging: *default-logging
