@@ -77,10 +77,7 @@ function xAxe(fontColor) {
     type: "time",
     time: {
       unit: "day",
-      tooltipFormat: "YYYY-MM-DD",
-      displayFormats: {
-        day: "YYYY-MM-DD",
-      },
+      tooltipFormat: "DD",
       stepSize: 14,
     },
     ticks: {
@@ -109,6 +106,7 @@ const config = {
     datasets: [],
   },
   options: {
+    locale: "en-US",
     layout: {
       padding,
     },
