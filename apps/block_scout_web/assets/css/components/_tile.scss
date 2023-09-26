@@ -3,7 +3,7 @@ $tile-type-uncle-color: $cyan !default;
 $tile-type-reorg-color: $purple !default;
 $tile-type-emission-reward-color: $lilac !default;
 $tile-type-transaction-color: $blue !default;
-$tile-type-contract-call-color: $green !default;
+$tile-type-contract-call-color: $lightblue !default;
 $tile-type-contract-creation-color: $dark-purple !default;
 $tile-type-token-transfer-color: $orange !default;
 $tile-type-unique-token-color: $orange !default;
@@ -25,7 +25,9 @@ $tile-body-a-color: #5959d8 !default;
       a {
         @if ($label-color) {
           color: $label-color;
-        } @else {
+        }
+
+        @else {
           color: $color;
         }
       }
@@ -34,7 +36,9 @@ $tile-body-a-color: #5959d8 !default;
     .tile-label {
       @if ($label-color) {
         color: $label-color;
-      } @else {
+      }
+
+      @else {
         color: $color;
       }
     }
@@ -187,6 +191,7 @@ $tile-body-a-color: #5959d8 !default;
   .tile-body {
     a {
       color: $tile-body-a-color;
+
       &:hover {
         span {
           text-decoration: underline;
@@ -208,6 +213,7 @@ $tile-body-a-color: #5959d8 !default;
       font-size: 16px;
     }
   }
+
   border-radius: 4px;
   border: 1px solid $border-color;
   color: $text-muted;
@@ -216,63 +222,39 @@ $tile-body-a-color: #5959d8 !default;
   line-height: 1.4rem;
   padding: $tile-padding;
 
-  @include generate-tile-block(
-    ".tile-type-block",
+  @include generate-tile-block(".tile-type-block",
     $tile-type-block-color,
-    darken($tile-type-block-color, 20%)
-  );
+    darken($tile-type-block-color, 20%));
   @include generate-tile-block(".tile-type-uncle", $tile-type-uncle-color);
   @include generate-tile-block(".tile-type-reorg", $tile-type-reorg-color);
-  @include generate-tile-block(
-    ".tile-type-emission-reward",
-    $tile-type-emission-reward-color
-  );
-  @include generate-tile-block(
-    ".tile-type-transaction",
-    $tile-type-transaction-color
-  );
-  @include generate-tile-block(
-    ".tile-type-contract-call",
-    $tile-type-contract-call-color
-  );
-  @include generate-tile-block(
-    ".tile-type-contract-creation",
-    $tile-type-contract-creation-color
-  );
-  @include generate-tile-block(
-    ".tile-type-token-transfer",
-    $tile-type-token-transfer-color
-  );
-  @include generate-tile-block(
-    ".tile-type-unique-token",
-    $tile-type-unique-token-color
-  );
-  @include generate-tile-block(
-    ".tile-type-unique-token-image",
-    $tile-type-unique-token-image-color
-  );
-  @include generate-tile-block(
-    ".tile-type-internal-transaction",
-    $tile-type-internal-transaction-color
-  );
-  @include generate-tile-block(
-    ".tile-type-api-documentation",
-    $tile-type-api-documentation-color
-  );
-  @include generate-tile-block(
-    '[class*="status--error"]',
-    $tile-status-error-reason
-  );
-  @include generate-tile-block(
-    ".tile-status--awaiting-internal-transactions",
-    $tile-status-awaiting-internal-transactions
-  );
+  @include generate-tile-block(".tile-type-emission-reward",
+    $tile-type-emission-reward-color );
+  @include generate-tile-block(".tile-type-transaction",
+    $tile-type-transaction-color );
+  @include generate-tile-block(".tile-type-contract-call",
+    $tile-type-contract-call-color );
+  @include generate-tile-block(".tile-type-contract-creation",
+    $tile-type-contract-creation-color );
+  @include generate-tile-block(".tile-type-token-transfer",
+    $tile-type-token-transfer-color );
+  @include generate-tile-block(".tile-type-unique-token",
+    $tile-type-unique-token-color );
+  @include generate-tile-block(".tile-type-unique-token-image",
+    $tile-type-unique-token-image-color );
+  @include generate-tile-block(".tile-type-internal-transaction",
+    $tile-type-internal-transaction-color );
+  @include generate-tile-block(".tile-type-api-documentation",
+    $tile-type-api-documentation-color );
+  @include generate-tile-block('[class*="status--error"]',
+    $tile-status-error-reason );
+  @include generate-tile-block(".tile-status--awaiting-internal-transactions",
+    $tile-status-awaiting-internal-transactions );
 
   &.n-p {
     padding: 0;
   }
 
-  & + & {
+  &+& {
     margin-top: 1rem;
   }
 
@@ -286,6 +268,7 @@ $tile-body-a-color: #5959d8 !default;
 
   &.tile-type-block {
     max-width: 100%;
+
     .tile-title {
       font-weight: 700;
       line-height: 1.2;
@@ -353,9 +336,11 @@ $tile-body-a-color: #5959d8 !default;
         padding-right: 6px;
       }
     }
-    .tile-type-block {  
-      overflow: hidden; 
+
+    .tile-type-block {
+      overflow: hidden;
     }
+
     .row {
       @include media-breakpoint-down(lg) {
         margin-left: -6px;
@@ -380,6 +365,7 @@ $tile-body-a-color: #5959d8 !default;
   background-color: #f5f6fa;
   overflow: hidden;
   position: relative;
+
   &:before {
     width: inherit;
     height: inherit;
@@ -401,22 +387,30 @@ $tile-body-a-color: #5959d8 !default;
 }
 
 .tile-address-loader {
-  & + .tile-address-loader {
+  &+.tile-address-loader {
     margin-top: 6px;
   }
 }
 
 @keyframes tilePlaceholderAnimate {
-  0%{ background-position: -650px 0; }
-  100% { background-position: 650px 0; }
+  0% {
+    background-position: -650px 0;
+  }
+
+  100% {
+    background-position: 650px 0;
+  }
 }
 
 // Loading Animation
 
 @keyframes playBlockLoadingAnimation {
-  0%, 90% {
+
+  0%,
+  90% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
@@ -434,6 +428,7 @@ $tile-body-a-color: #5959d8 !default;
   .tile-type-block {
     position: relative;
   }
+
   .tile-type-block-animation {
     opacity: 0;
     position: absolute;
@@ -449,6 +444,7 @@ $tile-body-a-color: #5959d8 !default;
     border-right: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
     pointer-events: none;
+
     .tile-type-line-up {
       position: absolute;
       bottom: -1px;
@@ -461,6 +457,7 @@ $tile-body-a-color: #5959d8 !default;
       animation: blockLoaderLine 2s linear forwards;
       z-index: 2;
     }
+
     &:after {
       content: "";
       position: absolute;
@@ -492,12 +489,13 @@ $tile-body-a-color: #5959d8 !default;
   0% {
     transform: scaleY(0);
   }
+
   100% {
     transform: scaleY(1);
   }
 }
 
-$cube-bezier: cubic-bezier(.25,.8,.25,1);
+$cube-bezier: cubic-bezier(.25, .8, .25, 1);
 $cube-quantity: 5;
 
 .cube-animation-wrapper {
@@ -507,6 +505,7 @@ $cube-quantity: 5;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.26);
+
   svg {
     width: 50px;
     margin-top: -29px;
@@ -527,18 +526,20 @@ $cube-quantity: 5;
     }
   }
 
-  @while $cube-quantity > 0 {
+  @while $cube-quantity >0 {
     .cube-animation-row:nth-of-type(#{$cube-quantity}) {
       left: 25px * $cube-quantity;
       top: 15px * $cube-quantity;
     }
+
     .cube-animation-column:nth-of-type(#{$cube-quantity}) {
       position: relative;
       top: 14px * $cube-quantity;
       left: 25px * $cube-quantity;
     }
+
     .cube-animation-column:nth-of-type(#{$cube-quantity}) svg {
-      transform: translate3d(0,0,0);
+      transform: translate3d(0, 0, 0);
       animation: shrink-expand 2.8s $cube-bezier forwards;
       animation-delay: -0.16s * $cube-quantity;
     }
@@ -568,9 +569,11 @@ $cube-quantity: 5;
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1);
   }
+
   100% {
     transform: scale(0);
   }
@@ -592,6 +595,7 @@ $cube-quantity: 5;
   display: inline-block;
   vertical-align: middle;
   margin-top: 3px;
+
   @include media-breakpoint-down(sm) {
     display: inline;
   }

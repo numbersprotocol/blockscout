@@ -10,10 +10,20 @@ $navbar-logo-height: 22px;
 // footer
 $footer-background-color: $primary;
 $footer-title-color: #fff;
-$footer-text-color: #00c9ff;
+$footer-text-color: #fff;
 $footer-item-disc-color: $secondary;
-.footer-logo { filter: brightness(0) invert(1); }
-.footer-social-icons .footer-social-icon { color: $secondary; }
+
+.text-success-lightblue {
+	color: $additional-font !important;
+}
+
+.footer-logo {
+	filter: brightness(0) invert(1);
+}
+
+.footer-social-icons .footer-social-icon {
+	color: $secondary;
+}
 
 // dashboard
 $dashboard-line-color-price: $tertiary; // price left border
@@ -33,7 +43,11 @@ $dashboard-banner-network-plain-container-background-color: #000000; // stats bg
 
 
 // navigation
-.navbar { box-shadow: 0px 0px 30px 0px rgba(21, 53, 80, 0.12); } // header shadow
+.navbar {
+	box-shadow: 0px 0px 30px 0px rgba(21, 53, 80, 0.12);
+}
+
+// header shadow
 
 // buttons
 $btn-line-bg: #fff; // button bg
@@ -47,7 +61,10 @@ $btn-contract-color: $secondary;
 $tile-body-a-color: $secondary;
 $tile-type-block-color: $secondary;
 $tile-type-progress-bar-color: $secondary;
-a.tile-title { color: $secondary !important; }
+
+a.tile-title {
+	color: $secondary !important;
+}
 
 // card
 $card-background-1: $secondary;
@@ -55,11 +72,9 @@ $card-tab-active: $secondary;
 
 .layout-container {
 	.dashboard-banner-container {
-	  background-image: linear-gradient(
-	    to bottom,
-	    $dashboard-banner-gradient-start,
-	    $dashboard-banner-gradient-end
-	  );
+		background-image: linear-gradient(to bottom,
+				$dashboard-banner-gradient-start,
+				$dashboard-banner-gradient-end );
 	}
 }
 
@@ -69,10 +84,11 @@ $dark-secondary: #0000d8;
 $dark-primary-alternate: #f2f2f2;
 
 .dark-theme-applied {
-  .dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:nth-child(1)::before {
-    background-color: $dark-primary !important;
-  }
-  .dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:nth-child(2)::before {
-    background-color: $dark-secondary !important;
-  }
+	.dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:nth-child(1)::before {
+		background-color: $dark-primary !important;
+	}
+
+	.dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:nth-child(2)::before {
+		background-color: $dark-secondary !important;
+	}
 }
