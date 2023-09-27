@@ -10,6 +10,8 @@ defmodule BlockScoutWeb.TransactionView do
   alias Explorer.Counters.AverageBlockTime
   alias Explorer.ExchangeRates.Token
   alias Timex.Duration
+  alias Explorer.Nit
+  alias Explorer.Nit.Decoder
 
   import BlockScoutWeb.Gettext
   import BlockScoutWeb.AddressView, only: [from_address_hash: 1, short_token_id: 2, tag_name_to_label: 1]
