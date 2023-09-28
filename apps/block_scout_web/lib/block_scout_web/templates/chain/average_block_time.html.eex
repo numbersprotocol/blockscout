@@ -1,0 +1,19 @@
+<div class="dashboard-banner-chart-legend-item average-block-time">
+    <span class="dashboard-banner-chart-legend-label">
+    <%= gettext "Avg. Block Time" %>
+    </span>
+    <div class="dashboard-banner-chart-legend-value-container">
+        <%= if @average_block_time do %>
+            <span class="dashboard-banner-chart-legend-value inline">
+                <div>
+                    <div class="d-flex flex-row" style="height: 20px; line-height: 20px;">
+                        <div class="flex-column">
+                            <%= Timex.format_duration(@average_block_time, Explorer.Counters.AverageBlockTimeDurationFormat) %>
+                        </div>
+                    </div>
+                </div>
+            </span>
+        <% else %>
+        <% end %>
+    </div>
+</div>
