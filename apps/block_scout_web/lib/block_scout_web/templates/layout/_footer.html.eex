@@ -2,7 +2,7 @@
   <div class="footer-body container">
     <!-- Logo -->
     <div class="row footer-logo-row">
-      <div class="col-md-12">
+      <div class="col-md-6">
         <%= link to: webapp_url(@conn), class: "footer-brand" do %>
           <%= if logo_footer() do %>
             <img class="footer-logo" src="<%= static_path(@conn, logo_footer()) %>" alt="<%= subnetwork_title() %>" />
@@ -12,6 +12,9 @@
           <% end %>
         <% end %>
       </div>
+      <div class="col-md-6">
+        <p class="footer-info-text"><%= gettext("Numbers Protocol offers content verification for AI-driven firms and creative tools. We provide affordable digital provenance infrastructures and decentralized storage, boosting trust in digital content and enabling innovative monetization methods.") %></p>
+      </div>
     </div>
 
     <% other_explorers = other_explorers() %>
@@ -19,7 +22,6 @@
 
     <div class="row">
       <div class="col-xs-12 col-lg-3">
-        <p class="footer-info-text"><%= gettext("Numbers Protocol offers content verification for AI-driven firms and creative tools. We provide affordable digital provenance infrastructures and decentralized storage, boosting trust in digital content and enabling innovative monetization methods.") %></p>
         <div class="footer-social-icons">
           <a href="<%= Application.get_env(:block_scout_web, :footer)[:website_link] %>" rel="noreferrer" target="_blank" class="footer-social-icon" title='<%= gettext("Website") %>'>
             <div class="footer-social-icon-container fontawesome-icon house"></div>
@@ -80,7 +82,7 @@
     <%= unless ignore_version?(version) do %>
       <% release_link = release_link(version) %>
       <div>
-        <%= gettext("Version") %>: <%= release_link %>
+        <%= gettext("Version") %>: <%= gettext("1.0") %>
       </div>
     <% end %>
   </div>
