@@ -92,6 +92,21 @@
                   title: gettext("Copy Txn Hash") %>
             </dd>
           </dl>
+          <%= if nid_value do %>
+            <dl class="row">
+              <dt class="col-sm-3 col-lg-2 text-muted">
+                <%= render BlockScoutWeb.CommonComponentsView, "_i_tooltip_2.html",
+                text: gettext("Nid of the commit.") %>
+                <%= gettext "Asset Nid" %>
+              </dt>
+              <dd class="col-sm-9 col-lg-10">
+                <a href="https://nftsearch.site/asset-profile?cid=<%= nid_value %>" target="_blank">
+                  <%= nid_value %>
+                </a>
+                (EIP-7053)
+              </dd>
+            </dl>
+          <% end %>
           <!-- Verify in other explorers -->
           <!-- <%= render BlockScoutWeb.AddressView, "_verify_other_explorers.html", hash: hash(@transaction), type: "tx" %> -->
           <!-- Result -->
@@ -523,21 +538,6 @@
                 </div>
               </dd>
             </dl>
-            <%= if nid_value do %>
-              <dl class="row">
-                <dt class="col-sm-3 col-lg-2 text-muted">
-                  <%= render BlockScoutWeb.CommonComponentsView, "_i_tooltip_2.html",
-                  text: gettext("Nid of the commit.") %>
-                  <%= gettext "Asset Nid" %>
-                </dt>
-                <dd class="col-sm-9 col-lg-10">
-                  <a href="https://nftsearch.site/asset-profile?cid=<%= nid_value %>" target="_blank">
-                    <%= nid_value %>
-                  </a>
-                  (EIP-7053)
-                </dd>
-              </dl>
-            <% end %>
           <% end %>
         </div>
       </div>
