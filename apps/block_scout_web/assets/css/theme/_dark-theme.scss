@@ -151,6 +151,12 @@ $header-links-background-color-dark-mode: $dark-light !default;
 			}
 		}
 
+		&.average-block-time {
+			&::before {
+				background-color: $dark-primary;
+			}
+		}
+
 		&.market-cap-per-day {
 			&::before {
 				background-color: $dark-secondary;

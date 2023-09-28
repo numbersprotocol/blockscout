@@ -143,6 +143,12 @@ $dashboard-banner-chart-axis-font-color-alt: #333;
       }
     }
 
+    &.average-block-time {
+      &::before {
+        background-color: $dashboard-line-color-price;
+      }
+    }
+
     &.market-cap-per-day {
       &::before {
         background-color: $dashboard-line-color-market;
