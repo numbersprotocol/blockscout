@@ -100,7 +100,7 @@ defmodule Indexer.Fetcher.InternalTransaction do
 
     filtered_unique_numbers =
       unique_numbers
-      |> EthereumJSONRPC.block_numbers_in_range()
+      |> EthereumJSONRPC.are_block_numbers_in_range?()
       |> drop_genesis(json_rpc_named_arguments)
 
     filtered_unique_numbers_count = Enum.count(filtered_unique_numbers)
@@ -305,7 +305,7 @@ defmodule Indexer.Fetcher.InternalTransaction do
         |> Map.delete(:created_contract_code)
         |> Map.delete(:gas_used)
         |> Map.delete(:output)
-        |> Map.put(:error, failed_parent[:error])
+        |> Map.put(:error, internal_transaction_param[:error] || failed_parent[:error])
       else
         internal_transaction_param
       end
