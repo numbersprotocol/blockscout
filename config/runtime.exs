@@ -20,6 +20,7 @@ config :block_scout_web,
   apps_menu: ConfigHelper.parse_bool_env_var("APPS_MENU"),
   apps: System.get_env("APPS") || System.get_env("EXTERNAL_APPS"),
   gas_price: System.get_env("GAS_PRICE"),
+  total_supply: System.get_env("TOTAL_SUPPLY")
   dark_forest_addresses: System.get_env("CUSTOM_CONTRACT_ADDRESSES_DARK_FOREST"),
   dark_forest_addresses_v_0_5: System.get_env("CUSTOM_CONTRACT_ADDRESSES_DARK_FOREST_V_0_5"),
   circles_addresses: System.get_env("CUSTOM_CONTRACT_ADDRESSES_CIRCLES"),

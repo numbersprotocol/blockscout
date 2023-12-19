@@ -98,7 +98,7 @@
               <%= gettext "Total Supply" %>
             </span>
             <span class="dashboard-banner-network-stats-value" data-selector="total-supply">
-              <%= gettext "275,851,778" %>
+              <%= @total_supply %>
             </span>
           </div>
           <div class="dashboard-banner-network-stats-item dashboard-banner-network-stats-item-2">

@@ -59,6 +59,7 @@ defmodule BlockScoutWeb.ChainController do
       transaction_stats: transaction_stats,
       block_count: block_count,
       gas_price: Application.get_env(:block_scout_web, :gas_price)
+      total_supply: Application.get_env(:block_scout_web, :total_supply)
     )
   end
 
