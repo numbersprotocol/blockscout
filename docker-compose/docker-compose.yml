@@ -1,10 +1,17 @@
-version: '3.9'
+version: "3.9"
+
+x-logging: &default-logging
+  options:
+    max-size: "10m"
+    max-file: "10"
+  driver: json-file
 
 services:
   redis-db:
     extends:
       file: ./services/redis.yml
       service: redis-db
+    logging: *default-logging
 
   db-init:
     extends:
@@ -18,6 +25,7 @@ services:
     extends:
       file: ./services/db.yml
       service: db
+    logging: *default-logging
 
   backend:
     depends_on:
@@ -38,23 +46,31 @@ services:
         CACHE_ADDRESS_WITH_BALANCES_UPDATE_INTERVAL: ""
         ADMIN_PANEL_ENABLED: ""
         RELEASE_VERSION: 6.2.2
+    logging: *default-logging
+    restart: always
+    stop_grace_period: 5m
+    container_name: "blockscout"
     links:
       - db:database
     environment:
-        ETHEREUM_JSONRPC_HTTP_URL: http://host.docker.internal:8545/
-        ETHEREUM_JSONRPC_TRACE_URL: http://host.docker.internal:8545/
-        ETHEREUM_JSONRPC_WS_URL: ws://host.docker.internal:8545/
-        CHAIN_ID: '1337'
+      ETHEREUM_JSONRPC_HTTP_URL: https://mainnetrpc.num.network/explorer/
+      ETHEREUM_JSONRPC_TRACE_URL: https://mainnetrpc.num.network/explorer/
+      ETHEREUM_JSONRPC_WS_URL: wss://mainnetrpc.num.network/ws/
+      CHAIN_ID: "10507"
+    volumes:
+      - ./logs/:/app/logs/
 
   visualizer:
     extends:
       file: ./services/visualizer.yml
       service: visualizer
+    logging: *default-logging
 
   sig-provider:
     extends:
       file: ./services/sig-provider.yml
       service: sig-provider
+    logging: *default-logging
 
   frontend:
     depends_on:

@@ -1,6 +1,6 @@
 $common-link-color: $primary !default;
-$blue: #4b89fb !default;
-$success: #34c0ad !default;
+$blue: #0000d8 !default;
+$success: #00c9ff !default;
 
 body {
   font-family: $font-family;
@@ -76,6 +76,7 @@ textarea.form-control {
   display: inline-block;
   text-decoration: underline;
   text-decoration-style: dashed;
+
   &:hover {
     text-decoration-style: none;
   }
@@ -87,7 +88,7 @@ textarea.form-control {
   }
 
   &-contract-call {
-    color: $green;
+    color: $lightblue;
   }
 
   &-contract-creation {

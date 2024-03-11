@@ -5,6 +5,8 @@ defmodule BlockScoutWeb.Tokens.OverviewView do
   alias Explorer.Chain.{Address, SmartContract, Token}
   alias Explorer.Chain.SmartContract.Proxy
   alias Explorer.SmartContract.{Helper, Writer}
+  alias Explorer.Nit
+  alias Explorer.Nit.Decoder
 
   alias BlockScoutWeb.{AccessHelper, CurrencyHelper, LayoutView}
 

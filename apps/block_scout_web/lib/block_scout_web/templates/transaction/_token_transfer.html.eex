@@ -6,7 +6,7 @@
             &#8627;
         </span>
       <% else %>
-        <span data-test="transaction_type" class="text-success">
+        <span data-test="transaction_type" class="text-success-lightblue">
             &#8627;
         </span>
       <% end %>

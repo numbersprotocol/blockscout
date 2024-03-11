@@ -26,6 +26,10 @@
 <% address_hash_str = if to_address_hash, do: "0x" <> Base.encode16(to_address_hash.bytes, case: :lower), else: nil %>
 <% {:ok, created_from_address} = if to_address_hash, do: Chain.hash_to_address(to_address_hash), else: {:ok, nil} %>
 <% created_from_address_hash_str = if from_address_hash(created_from_address), do: "0x" <> Base.encode16(from_address_hash(created_from_address).bytes, case: :lower), else: nil %>
+<% nid_value = case Nit.Decoder.get_nid(to_string(@transaction.input)) do
+    {:ok, nid} -> nid
+    _error -> nil
+  end %>
 <%= render BlockScoutWeb.Advertisement.TextAdView, "index.html", conn: @conn %>
 <section class="fs-14" data-page="transaction-details" data-page-transaction-hash="<%= @transaction %>">
   <div class="row">
@@ -88,6 +92,21 @@
                   title: gettext("Copy Txn Hash") %>
             </dd>
           </dl>
+          <%= if nid_value do %>
+            <dl class="row">
+              <dt class="col-sm-3 col-lg-2 text-muted">
+                <%= render BlockScoutWeb.CommonComponentsView, "_i_tooltip_2.html",
+                text: gettext("Nid of the commit.") %>
+                <%= gettext "Asset Nid" %>
+              </dt>
+              <dd class="col-sm-9 col-lg-10">
+                <a href="https://nftsearch.site/asset-profile?cid=<%= nid_value %>" target="_blank">
+                  <%= nid_value %>
+                </a>
+                (EIP-7053)
+              </dd>
+            </dl>
+          <% end %>
           <!-- Verify in other explorers -->
           <!-- <%= render BlockScoutWeb.AddressView, "_verify_other_explorers.html", hash: hash(@transaction), type: "tx" %> -->
           <!-- Result -->

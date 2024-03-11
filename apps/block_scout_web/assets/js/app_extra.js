@@ -3,7 +3,7 @@ import { isDarkMode } from './lib/dark_mode'
 function applyDarkMode () {
   if (isDarkMode()) {
     document.body.className += ' ' + 'dark-theme-applied'
-    document.body.style.backgroundColor = '#1c1d31'
+    document.body.style.backgroundColor = '#000000'
   }
 }
 window.onload = applyDarkMode()

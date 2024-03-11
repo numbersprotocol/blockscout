@@ -1,8 +1,11 @@
-version: '3.9'
+version: "3.9"
 
 services:
-  redis-db:
-    image: 'redis:alpine'
+  redis_db:
+    image: "redis:alpine"
+    restart: always
+    ports:
+      - 6379:6379
     container_name: redis-db
     command: redis-server
     volumes:
