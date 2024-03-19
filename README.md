@@ -31,7 +31,7 @@ For questions, comments and feature requests see the [discussions section](https
     cp envs/common-blockscout.env.testnet envs/common-blockscout.env 
     vim envs/common-blockscout.env
 
-    docker compose up -d --build
+    docker compose -f docker-compose-all.yml up -d --build
     ```
 
 3. Setup load balancer or nginx reverse proxy for port 4000
