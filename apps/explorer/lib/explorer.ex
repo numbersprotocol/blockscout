@@ -19,4 +19,8 @@ defmodule Explorer do
   def coin_name do
     Application.get_env(:explorer, :coin_name)
   end
+
+  def icon_url do
+    Application.get_env(:explorer, :icon_url)
+  end
 end

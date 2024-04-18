@@ -10,6 +10,9 @@ export async function addChainToMM ({ btn }) {
     const coinNameObj = document.getElementById('js-coin-name')
     // @ts-ignore
     const coinName = coinNameObj && coinNameObj.value
+    const iconUrlObj = document.getElementById('js-icon-url')
+    // @ts-ignore
+    const iconUrl = iconUrlObj && iconUrlObj.value
     const subNetworkObj = document.getElementById('js-subnetwork')
     // @ts-ignore
     const subNetwork = subNetworkObj && subNetworkObj.value
@@ -25,6 +28,7 @@ export async function addChainToMM ({ btn }) {
         params: [{
           chainId: chainIDFromInstance,
           chainName: subNetwork,
+          iconUrls: [iconUrl],
           nativeCurrency: {
             name: coinName,
             symbol: coinName,
