@@ -405,8 +405,15 @@ defmodule BlockScoutWeb.TransactionView do
     Logger.debug("Attempting to decode input data for transaction: #{inspect(transaction.hash)}", logger: :transaction_decoder)
     try do
       {result, _, _} = Transaction.decoded_input_data(transaction, [])
-      Logger.debug("Successfully decoded input data: #{inspect(result)}", logger: :transaction_decoder)
-      result
+      case result do
+        {:error, :no_matching_function} ->
+          Logger.warn("No matching function found for transaction #{inspect(transaction.hash)}", logger: :transaction_decoder)
+          Logger.debug("Transaction details: #{inspect(transaction)}", logger: :transaction_decoder)
+          "No matching function found"
+        _ ->
+          Logger.debug("Successfully decoded input data: #{inspect(result)}", logger: :transaction_decoder)
+          result
+      end
     rescue
       e ->
         Logger.error("Failed to decode input data for transaction #{inspect(transaction.hash)}: #{inspect(e)}", logger: :transaction_decoder)

@@ -67,6 +67,13 @@ services:
     environment:
       - BLOCKSCOUT_LOG_LEVEL=debug
       - BLOCKSCOUT_TRANSACTION_DECODER_LOG=/app/logs/transaction_decoder.log
+    command: >
+      sh -c "
+        bin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\" &&
+        bin/blockscout start &
+        sleep 60 &&
+        tail -f /app/logs/transaction_decoder.log | grep -C 10 'Failed to decode' > /app/logs/failed_decodes.txt
+      "
 
   visualizer:
     extends:
