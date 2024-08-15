@@ -64,6 +64,9 @@ services:
       - 4000:4000
     volumes:
       - ./logs/:/app/logs/
+    environment:
+      - BLOCKSCOUT_LOG_LEVEL=debug
+      - BLOCKSCOUT_TRANSACTION_DECODER_LOG=/app/logs/transaction_decoder.log
 
   visualizer:
     extends:

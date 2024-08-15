@@ -39,8 +39,15 @@ config :logger,
     {LoggerFileBackend, :block_import_timings},
     {LoggerFileBackend, :account},
     {LoggerFileBackend, :api_v2},
+    {LoggerFileBackend, :transaction_decoder},
     LoggerJSON
   ]
+
+config :logger, :transaction_decoder,
+  path: "/app/logs/transaction_decoder.log",
+  level: :debug,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id]
 
 config :logger_json, :backend,
   metadata:
