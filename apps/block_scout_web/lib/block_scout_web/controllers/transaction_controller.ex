@@ -2,6 +2,8 @@ defmodule BlockScoutWeb.TransactionController do
   use BlockScoutWeb, :controller
 
   import BlockScoutWeb.Account.AuthController, only: [current_user: 1]
+  
+  require Logger
 
   import BlockScoutWeb.Chain,
     only: [
@@ -149,8 +151,10 @@ defmodule BlockScoutWeb.TransactionController do
   end
 
   def show(conn, %{"id" => id} = params) do
+    Logger.debug("Attempting to show transaction with id: #{id}")
     with {:ok, transaction_hash} <- Chain.string_to_transaction_hash(id),
          :ok <- Chain.check_transaction_exists(transaction_hash) do
+    Logger.debug("Transaction exists, proceeding with rendering")
       if Chain.transaction_has_token_transfers?(transaction_hash) do
         with {:ok, transaction} <-
                Chain.hash_to_transaction(transaction_hash, necessity_by_association: @necessity_by_association),

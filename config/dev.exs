@@ -1,7 +1,10 @@
 import Config
 
-# DO NOT make it `:debug` or all Ecto logs will be shown for indexer
-config :logger, :console, level: :info
+# Set console logging level to :debug
+config :logger, :console, level: :debug
+
+# Set block_scout_web logging level to :debug
+config :logger, :block_scout_web, level: :debug
 
 config :logger_json, :backend, level: :none
 

@@ -2,6 +2,8 @@ defmodule BlockScoutWeb.TransactionView do
   use BlockScoutWeb, :view
 
   alias BlockScoutWeb.{AccessHelper, AddressView, BlockView, TabHelper}
+  
+  require Logger
   alias BlockScoutWeb.Account.AuthController
   alias BlockScoutWeb.Cldr.Number
   alias Explorer.{Chain, CustomContractsHelper, Repo}
@@ -392,12 +394,24 @@ defmodule BlockScoutWeb.TransactionView do
   end
 
   def skip_decoding?(transaction) do
-    contract_creation?(transaction) || value_transfer?(transaction)
+    result = contract_creation?(transaction) || value_transfer?(transaction)
+    if result do
+      Logger.debug("Skipping decoding for transaction: #{transaction.hash}")
+    end
+    result
   end
 
   def decoded_input_data(transaction) do
-    {result, _, _} = Transaction.decoded_input_data(transaction, [])
-    result
+    Logger.debug("Attempting to decode input data for transaction: #{transaction.hash}")
+    try do
+      {result, _, _} = Transaction.decoded_input_data(transaction, [])
+      Logger.debug("Successfully decoded input data: #{inspect(result)}")
+      result
+    rescue
+      e ->
+        Logger.error("Failed to decode input data: #{inspect(e)}")
+        "Failed to decode input data"
+    end
   end
 
   def decoded_revert_reason(revert_reason, transaction, options) do
