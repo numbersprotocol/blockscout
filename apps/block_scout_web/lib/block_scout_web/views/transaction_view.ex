@@ -402,14 +402,15 @@ defmodule BlockScoutWeb.TransactionView do
   end
 
   def decoded_input_data(transaction) do
-    Logger.debug("Attempting to decode input data for transaction: #{transaction.hash}")
+    Logger.debug("Attempting to decode input data for transaction: #{inspect(transaction.hash)}")
     try do
       {result, _, _} = Transaction.decoded_input_data(transaction, [])
       Logger.debug("Successfully decoded input data: #{inspect(result)}")
       result
     rescue
       e ->
-        Logger.error("Failed to decode input data: #{inspect(e)}")
+        Logger.error("Failed to decode input data for transaction #{inspect(transaction.hash)}: #{inspect(e)}")
+        Logger.debug("Transaction details: #{inspect(transaction)}")
         "Failed to decode input data"
     end
   end

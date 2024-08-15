@@ -11,7 +11,13 @@ services:
     extends:
       file: ./services/redis.yml
       service: redis-db
-    logging: *default-logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    environment:
+      - BLOCKSCOUT_LOG_LEVEL=debug
 
   db-init:
     extends:
