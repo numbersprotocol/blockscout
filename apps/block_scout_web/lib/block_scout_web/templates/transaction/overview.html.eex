@@ -100,7 +100,7 @@
                 <%= gettext "Asset Nid" %>
               </dt>
               <dd class="col-sm-9 col-lg-10">
-                <a href="https://nftsearch.site/asset-profile?cid=<%= nid_value %>" target="_blank">
+                <a href="https://verify.numbersprotocol.io/asset-profile/<%= nid_value %>" target="_blank">
                   <%= nid_value %>
                 </a>
                 (EIP-7053)
