@@ -14,7 +14,30 @@ See our [project documentation](https://docs.blockscout.com/) for detailed infor
 
 For questions, comments and feature requests see the [discussions section](https://github.com/blockscout/blockscout/discussions) or via [Discord](https://discord.com/invite/blockscout).
 
-## About Blockscout
+## Deploy Numbers Blockscout Explorer
+
+1. Install docker and docker compose
+2. Run
+
+    ```sh
+    git clone git@github.com:numbersprotocol/blockscout.git
+    cd blockscout/docker-compose
+
+    # Generate a secret key base
+    openssl rand -base64 64 | tr -d '\n'
+
+    # Edit the .env and paste the secret key base to SECRET_KEY_BASE
+    # Also make sure the icon, subnetwork name, RPC urls are correct
+    cp envs/common-blockscout.env.testnet envs/common-blockscout.env 
+    vim envs/common-blockscout.env
+
+    docker compose -f docker-compose-all.yml up -d --build
+    ```
+
+3. Setup load balancer or nginx reverse proxy for port 4000
+
+
+## About BlockScout
 
 Blockscout allows users to search transactions, view accounts and balances, verify and interact with smart contracts and view and interact with applications on the Ethereum network including many forks, sidechains, L2s and testnets.
 

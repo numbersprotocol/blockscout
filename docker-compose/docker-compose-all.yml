@@ -27,41 +27,37 @@ services:
       service: db
     logging: *default-logging
 
-  backend:
+  blockscout:
     depends_on:
       - db
       - redis-db
-    extends:
-      file: ./services/backend.yml
-      service: backend
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
       args:
-        RELEASE_VERSION: 6.10.0
+        CACHE_EXCHANGE_RATES_PERIOD: ""
+        API_V1_READ_METHODS_DISABLED: "false"
+        DISABLE_WEBAPP: "false"
+        API_V1_WRITE_METHODS_DISABLED: "false"
+        CACHE_TOTAL_GAS_USAGE_COUNTER_ENABLED: ""
+        CACHE_ADDRESS_WITH_BALANCES_UPDATE_INTERVAL: ""
+        ADMIN_PANEL_ENABLED: ""
+        RELEASE_VERSION: 6.2.2
     logging: *default-logging
+    restart: always
+    stop_grace_period: 5m
     container_name: "blockscout"
     links:
       - db:database
-    environment:
-      ETHEREUM_JSONRPC_HTTP_URL: https://mainnetrpc.num.network/explorer/
-      ETHEREUM_JSONRPC_TRACE_URL: https://mainnetrpc.num.network/explorer/
-      ETHEREUM_JSONRPC_WS_URL: wss://mainnetrpc.num.network/ws/
-      CHAIN_ID: "10507"
+    command: sh -c "bin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\" && bin/blockscout start"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./envs/common-blockscout.env
+    ports:
+      - 4000:4000
     volumes:
       - ./logs/:/app/logs/
-
-  nft_media_handler:
-    depends_on:
-      - backend
-    extends:
-      file: ./services/nft_media_handler.yml
-      service: nft_media_handler
-    build:
-      context: ..
-      dockerfile: ./docker/Dockerfile
-      args:
-        RELEASE_VERSION: 6.10.0
 
   visualizer:
     extends:
@@ -74,13 +70,6 @@ services:
       file: ./services/sig-provider.yml
       service: sig-provider
     logging: *default-logging
-
-  frontend:
-    depends_on:
-      - backend
-    extends:
-      file: ./services/frontend.yml
-      service: frontend
 
   stats-db-init:
     extends:
@@ -98,24 +87,7 @@ services:
   stats:
     depends_on:
       - stats-db
-      - backend
+      - blockscout
     extends:
       file: ./services/stats.yml
       service: stats
-
-  user-ops-indexer:
-    depends_on:
-      - db
-      - backend
-    extends:
-      file: ./services/user-ops-indexer.yml
-      service: user-ops-indexer
-
-  proxy:
-    depends_on:
-      - backend
-      - frontend
-      - stats
-    extends:
-      file: ./services/nginx.yml
-      service: proxy

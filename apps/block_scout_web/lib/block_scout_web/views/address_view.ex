@@ -12,6 +12,8 @@ defmodule BlockScoutWeb.AddressView do
   alias Explorer.Chain.SmartContract.Proxy.Models.Implementation
   alias Explorer.ExchangeRates.Token, as: TokenExchangeRate
   alias Explorer.SmartContract.{Helper, Writer}
+  alias Explorer.Nit
+  alias Explorer.Nit.Decoder
 
   import BlockScoutWeb.Account.AuthController, only: [current_user: 1]
 

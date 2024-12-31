@@ -9,6 +9,14 @@
       mask-size: 22px !important;
       -webkit-mask-size: 22px !important;
     }
+    &.house {
+      -webkit-mask: url(../static/images/icons/fontawesome/house-solid.svg) no-repeat center;
+      mask: url(../static/images/icons/fontawesome/house-solid.svg) no-repeat center;
+      height: 22px;
+      width: 22px;
+      mask-size: 22px !important;
+      -webkit-mask-size: 22px !important;
+    }
     &.twitter {
       -webkit-mask: url(../static/images/icons/fontawesome/twitter.svg) no-repeat center;
       mask: url(../static/images/icons/fontawesome/twitter.svg) no-repeat center;
@@ -20,6 +28,14 @@
     &.telegram {
       -webkit-mask: url(../static/images/icons/fontawesome/telegram.svg) no-repeat center;
       mask: url(../static/images/icons/fontawesome/telegram.svg) no-repeat center;
+      height: 22px;
+      width: 22px;
+      mask-size: 22px !important;
+      -webkit-mask-size: 22px !important;
+    }
+    &.book {
+      -webkit-mask: url(../static/images/icons/fontawesome/book-solid.svg) no-repeat center;
+      mask: url(../static/images/icons/fontawesome/book-solid.svg) no-repeat center;
       height: 22px;
       width: 22px;
       mask-size: 22px !important;

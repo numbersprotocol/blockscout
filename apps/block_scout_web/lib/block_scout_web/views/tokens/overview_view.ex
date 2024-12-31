@@ -6,6 +6,8 @@ defmodule BlockScoutWeb.Tokens.OverviewView do
   alias Explorer.Chain.{Address, CurrencyHelper, SmartContract, Token}
   alias Explorer.Chain.SmartContract.Proxy
   alias Explorer.SmartContract.{Helper, Writer}
+  alias Explorer.Nit
+  alias Explorer.Nit.Decoder
 
   import BlockScoutWeb.AddressView, only: [from_address_hash: 1, contract_interaction_disabled?: 0]
 
