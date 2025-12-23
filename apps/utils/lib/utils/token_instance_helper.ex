@@ -58,12 +58,22 @@ defmodule Utils.TokenInstanceHelper do
   def media_type(nil, _headers, _), do: nil
 
   defp process_missing_extension(media_src, headers) do
-    case HTTPoison.head(media_src, headers, follow_redirect: true) do
-      {:ok, %HTTPoison.Response{status_code: 200, headers: headers}} ->
-        headers_map = Map.new(headers, fn {key, value} -> {String.downcase(key), value} end)
-        headers_map["content-type"]
+    # SSRF protection using SafeURL library
+    # This validates URL scheme and checks resolved IP is not private/internal
+    case SafeURL.validate(media_src, schemes: ["https"]) do
+      :ok ->
+        # URL is safe, proceed with HTTP HEAD request
+        case HTTPoison.head(media_src, headers, follow_redirect: true, timeout: 5_000, recv_timeout: 5_000) do
+          {:ok, %HTTPoison.Response{status_code: 200, headers: headers}} ->
+            headers_map = Map.new(headers, fn {key, value} -> {String.downcase(key), value} end)
+            headers_map["content-type"]
 
-      _ ->
+          _ ->
+            nil
+        end
+
+      {:error, _reason} ->
+        # URL is unsafe (private IP, localhost, cloud metadata, etc.)
         nil
     end
   end
