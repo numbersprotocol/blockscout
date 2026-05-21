@@ -16,6 +16,8 @@ services:
     user: 2000:2000
     shm_size: 256m
     restart: always
+    mem_limit: ${DB_MEM_LIMIT:-6g}
+    memswap_limit: ${DB_MEMSWAP_LIMIT:-6g}
     container_name: 'db'
     command: postgres -c 'max_connections=200' -c 'client_connection_check_interval=60000'
     environment:
@@ -33,3 +35,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: ${DB_LOG_MAX_SIZE:-50m}
+        max-file: ${DB_LOG_MAX_FILE:-5}

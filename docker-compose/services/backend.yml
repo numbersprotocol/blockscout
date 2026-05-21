@@ -5,6 +5,8 @@ services:
     image: blockscout/${DOCKER_REPO:-blockscout}:${DOCKER_TAG:-latest}
     pull_policy: always
     restart: always
+    mem_limit: ${BACKEND_MEM_LIMIT:-4g}
+    memswap_limit: ${BACKEND_MEMSWAP_LIMIT:-4g}
     stop_grace_period: 5m
     container_name: 'backend'
     command: sh -c "bin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\" && bin/blockscout start"
@@ -15,3 +17,14 @@ services:
     volumes:
       - ./logs/:/app/logs/
       - ./dets/:/app/dets/
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:$${PORT:-4000}/api/v2/main-page/indexing-status >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 2m
+    logging:
+      driver: json-file
+      options:
+        max-size: ${BACKEND_LOG_MAX_SIZE:-50m}
+        max-file: ${BACKEND_LOG_MAX_FILE:-5}
