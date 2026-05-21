@@ -16,6 +16,8 @@ services:
     user: 2000:2000
     shm_size: 256m
     restart: always
+    mem_limit: ${STATS_DB_MEM_LIMIT:-1g}
+    memswap_limit: ${STATS_DB_MEMSWAP_LIMIT:-1g}
     container_name: 'stats-db'
     command: postgres -c 'max_connections=200'
     environment:
@@ -33,12 +35,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: ${STATS_DB_LOG_MAX_SIZE:-25m}
+        max-file: ${STATS_DB_LOG_MAX_FILE:-5}
 
   stats:
     image: ghcr.io/blockscout/stats:${STATS_DOCKER_TAG:-latest}
     pull_policy: always
     platform: linux/amd64
     restart: always
+    mem_limit: ${STATS_MEM_LIMIT:-1g}
+    memswap_limit: ${STATS_MEMSWAP_LIMIT:-1g}
     container_name: 'stats'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -49,3 +58,8 @@ services:
       - STATS__BLOCKSCOUT_DB_URL=${STATS__BLOCKSCOUT_DB_URL:-postgresql://blockscout:ceWb1MeLBEeOIfk65gU8EjF8@db:5432/blockscout}
       - STATS__CREATE_DATABASE=${STATS__CREATE_DATABASE:-true}
       - STATS__RUN_MIGRATIONS=${STATS__RUN_MIGRATIONS:-true}
+    logging:
+      driver: json-file
+      options:
+        max-size: ${STATS_LOG_MAX_SIZE:-50m}
+        max-file: ${STATS_LOG_MAX_FILE:-5}

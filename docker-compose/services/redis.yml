@@ -5,5 +5,13 @@ services:
     image: 'redis:alpine'
     container_name: redis-db
     command: redis-server
+    restart: always
+    mem_limit: ${REDIS_MEM_LIMIT:-512m}
+    memswap_limit: ${REDIS_MEMSWAP_LIMIT:-512m}
     volumes:
       - ./redis-data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: ${REDIS_LOG_MAX_SIZE:-25m}
+        max-file: ${REDIS_LOG_MAX_FILE:-5}

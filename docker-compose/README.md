@@ -67,6 +67,9 @@ You can adjust BlockScout environment variables:
 - for visualizer in `./envs/common-visualizer.env`
 - for user-ops-indexer in `./envs/common-user-ops-indexer.env`
 
+For production resource limits, health checks, log rotation, and monitoring
+requirements, see [`production-hardening.md`](./production-hardening.md).
+
 Descriptions of the ENVs are available
 
 - for [backend](https://docs.blockscout.com/setup/env-variables)
