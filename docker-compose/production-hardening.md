@@ -11,10 +11,10 @@ The compose service files define non-secret defaults that can be overridden by
 the production environment:
 
 ```sh
-BACKEND_MEM_LIMIT=5g
-BACKEND_MEMSWAP_LIMIT=5g
-DB_MEM_LIMIT=5g
-DB_MEMSWAP_LIMIT=5g
+BACKEND_MEM_LIMIT=4g
+BACKEND_MEMSWAP_LIMIT=4g
+DB_MEM_LIMIT=6g
+DB_MEMSWAP_LIMIT=6g
 STATS_MEM_LIMIT=1g
 STATS_MEMSWAP_LIMIT=1g
 STATS_DB_MEM_LIMIT=1g

@@ -16,8 +16,8 @@ services:
     user: 2000:2000
     shm_size: 256m
     restart: always
-    mem_limit: ${DB_MEM_LIMIT:-5g}
-    memswap_limit: ${DB_MEMSWAP_LIMIT:-5g}
+    mem_limit: ${DB_MEM_LIMIT:-6g}
+    memswap_limit: ${DB_MEMSWAP_LIMIT:-6g}
     container_name: 'db'
     command: postgres -c 'max_connections=200' -c 'client_connection_check_interval=60000'
     environment:
