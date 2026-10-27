@@ -1,10 +1,13 @@
-version: '3.8'
-
 services:
   proxy:
     image: supply-api-proxy
     build: .
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/sa.json
+    volumes:
+      # Key for supply-api-reader@numbers-testnet-validators.iam.gserviceaccount.com
+      # (no IAM roles; Viewer on the supply sheet only). Never commit it.
+      - ./credentials/sa.json:/secrets/sa.json:ro
     restart: always
-
