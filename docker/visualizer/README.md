@@ -29,7 +29,9 @@ docker run --rm --entrypoint sol2uml blockscout-visualizer:node22.23.4-v0.2.1 --
 `visualizer-runtime.yml` 在同一 runner 以相同測試比較原映像與候選的
 UML、storage、import、巢狀路徑、SVG output mask、找不到合約及語法錯誤。
 成功回應必須為 HTTP 200／有效 SVG，並逐筆比對 SVG SHA256；錯誤回應也需相同。
-只有錯誤訊息中的隨機 tempfile 目錄會正規化。CI 同時核對 binary 與所有
+只有錯誤訊息中的隨機 tempfile 目錄，以及 Node 內部 task queue stack frame
+的版本差異會正規化；應用錯誤與應用 stack 仍逐項比對，原始錯誤另存 artifact。
+CI 同時核對 binary 與所有
 sol2uml 檔案／symlink 相同，保存已測試的候選 image 與 checksum。
 
 ```sh

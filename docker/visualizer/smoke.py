@@ -26,6 +26,15 @@ SOURCES = {
 }
 
 
+def normalize_error(text):
+    # 保留 API 錯誤與應用 stack；只略過隨機路徑及 Node 版本本身的內部 frame 差異。
+    text = re.sub(r"/tmp/\.tmp[A-Za-z0-9]+", "/tmp/TEMP", text)
+    return re.sub(
+        r"(?:process\.)?processTicksAndRejections \(node:internal/process/task_queues:\d+:\d+\)",
+        "processTicksAndRejections (node:internal/process/task_queues:LINE:COL)", text,
+    )
+
+
 def request(url, payload):
     req = urllib.request.Request(
         url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}
@@ -65,10 +74,8 @@ def run(url, artifacts):
         else:
             text = body.decode()
             assert expected_text in text, (name, text)
-            # sol2uml 的錯誤包含服務每次產生的 tempfile 路徑；僅正規化該隨機部分。
-            text = re.sub(r"/tmp/\.tmp[A-Za-z0-9]+", "/tmp/TEMP", text)
             (artifacts / f"{name}.txt").write_text(text)
-            results[name] = {"status": status, "content_type": content_type, "body": text}
+            results[name] = {"status": status, "content_type": content_type, "body": normalize_error(text)}
         print(f"PASS {name}: HTTP {status}", flush=True)
     return results
 
