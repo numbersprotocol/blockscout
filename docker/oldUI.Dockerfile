@@ -24,17 +24,28 @@ COPY rel ./rel
 COPY apps ./apps
 
 ##############################################################
+# Node stays in this build stage; only static assets and pure-JS solc are copied.
+FROM node:22.23.4-bookworm-slim AS node-assets
+
+WORKDIR /app
+COPY --from=builder-deps /app/deps/phoenix ./deps/phoenix
+COPY --from=builder-deps /app/deps/phoenix_html ./deps/phoenix_html
+COPY --from=builder-deps /app/apps/block_scout_web/assets ./apps/block_scout_web/assets
+COPY --from=builder-deps /app/apps/explorer/package*.json ./apps/explorer/
+
+RUN node --version && npm --version && \
+    cd apps/block_scout_web/assets && \
+    npm ci --no-audit --no-fund && \
+    npm run deploy && \
+    cd /app/apps/explorer && \
+    npm ci --no-audit --no-fund && \
+    test -z "$(find node_modules -name '*.node' -print -quit)"
+
+##############################################################
 FROM builder-deps AS builder-ui
 
-RUN apk --no-cache --update add nodejs npm && \
-    npm install npm@latest
-
-# Add blockscout npm deps
-RUN cd apps/block_scout_web/assets/ && \
-    npm install && \
-    npm run deploy && \
-    cd /app/apps/explorer/ && \
-    npm install
+COPY --from=node-assets /app/apps/block_scout_web/priv/static ./apps/block_scout_web/priv/static
+COPY --from=node-assets /app/apps/explorer/node_modules ./apps/explorer/node_modules
 
 RUN mix phx.digest
 

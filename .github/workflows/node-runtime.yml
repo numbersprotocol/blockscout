@@ -1,0 +1,147 @@
+name: Explorer Node runtime
+
+on:
+  pull_request:
+    branches: [feature-numbers-v3]
+    paths:
+      - .github/workflows/config.yml
+      - .github/workflows/node-runtime.yml
+      - docker/oldUI.Dockerfile
+      - .devcontainer/**
+      - .tool-versions
+      - apps/block_scout_web/assets/**
+      - apps/explorer/package*.json
+      - mix.lock
+
+permissions:
+  contents: read
+
+env:
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  assets:
+    name: Node 22 assets and regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            console.log(`Action runtime: ${process.version}`);
+            const [major, minor, patch] = process.versions.node.split('.').map(Number);
+            if (major !== 24 || minor < 22 || (minor === 22 && patch < 1)) {
+              throw new Error('Action runtime requires Node.js 24.22.1 or newer in Node 24');
+            }
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22.23.4'
+          package-manager-cache: false
+      - uses: erlef/setup-beam@v1.24.1
+        with:
+          otp-version: '27.1'
+          elixir-version: '1.17.3'
+      - name: 安裝 lockfile 中的 Phoenix 路徑依賴
+        run: |
+          node --version
+          npm --version
+          test "$(node --version)" = v22.23.4
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
+      - name: 安裝並驗證 Phoenix 連結
+        working-directory: apps/block_scout_web/assets
+        run: |
+          npm ci --no-audit --no-fund
+          node -e 'const fs=require("fs"); for (const p of ["phoenix","phoenix_html"]) { const actual=fs.realpathSync("node_modules/"+p); console.log(p,actual); if (!actual.endsWith("/deps/"+p)) throw new Error("Unexpected Phoenix dependency path"); }'
+      - name: Jest 與 production webpack
+        working-directory: apps/block_scout_web/assets
+        run: |
+          npm test -- --runInBand
+          npm run deploy
+      - name: ESLint 與 PR base 逐項比較
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          baseline="$RUNNER_TEMP/node-lint-base"
+          mkdir -p "$baseline"
+          git archive "$BASE_SHA" apps/block_scout_web/assets | tar -x -C "$baseline"
+          ln -s "$PWD/apps/block_scout_web/assets/node_modules" "$baseline/apps/block_scout_web/assets/node_modules"
+          BASELINE="$baseline" node <<'NODE'
+          const path = require('node:path');
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+          const { ESLint } = require('./apps/block_scout_web/assets/node_modules/eslint');
+          async function findings(root) {
+            const cwd = path.join(root, 'apps/block_scout_web/assets');
+            const results = await new ESLint({ cwd }).lintFiles(['js/**']);
+            return results.flatMap(r => r.messages.map(m => JSON.stringify({file: path.relative(cwd, r.filePath), ...m}))).sort();
+          }
+          (async () => {
+            const baseline = await findings(process.env.BASELINE);
+            const head = await findings(process.cwd());
+            fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'eslint-baseline.json'), JSON.stringify(baseline, null, 2));
+            fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'eslint-head.json'), JSON.stringify(head, null, 2));
+            console.log(`ESLint baseline=${baseline.length}, head=${head.length}`);
+            assert.deepEqual(head, baseline, 'ESLint findings differ from the PR base');
+          })().catch(e => { console.error(e); process.exitCode = 1; });
+          NODE
+      - name: 既有 solc 與跨 libc 產物檢查
+        working-directory: apps/explorer
+        run: |
+          npm ci --no-audit --no-fund
+          test -z "$(find node_modules -name '*.node' -print -quit)"
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const solc = require('solc');
+          const result = JSON.parse(solc.compile(JSON.stringify({language:'Solidity', sources:{'Probe.sol':{content:'pragma solidity ^0.8.0; contract Probe {}'}}, settings:{outputSelection:{'*':{'*':['evm.bytecode.object']}}}})));
+          assert.equal((result.errors || []).filter(e => e.severity === 'error').length, 0);
+          assert.ok(result.contracts['Probe.sol'].Probe.evm.bytecode.object);
+          console.log(`solc ${solc.version()}: 1 compile passed, 0 errors`);
+          NODE
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: node-regression-${{ env.HEAD_SHA }}
+          path: ${{ runner.temp }}/eslint-*.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  old-ui:
+    name: Old UI Docker build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          persist-credentials: false
+      - name: 實際建置 Node 與 Alpine 交接階段
+        run: |
+          docker build --pull --target builder-ui -f docker/oldUI.Dockerfile -t "blockscout-old-ui:${HEAD_SHA}" .
+          docker run --rm "blockscout-old-ui:${HEAD_SHA}" sh -ec '
+            test -s apps/block_scout_web/priv/static/cache_manifest.json
+            test -s apps/block_scout_web/priv/static/js/app.js
+            test -s apps/explorer/node_modules/solc/soljson.js
+            test -z "$(find apps/explorer/node_modules -name "*.node" -print -quit)"
+            ! command -v node
+          '
+
+  devcontainer:
+    name: Devcontainer Node runtime
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          persist-credentials: false
+      - name: 建置開發環境並檢查 Node
+        run: |
+          docker build -f .devcontainer/Dockerfile -t "blockscout-dev:${HEAD_SHA}" .devcontainer
+          test "$(docker run --rm "blockscout-dev:${HEAD_SHA}" node --version)" = v22.23.4
