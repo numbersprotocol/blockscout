@@ -3,6 +3,7 @@
 
 import argparse
 import base64
+import difflib
 import hashlib
 import json
 import re
@@ -36,7 +37,8 @@ def request(url, payload):
         return error.code, error.headers.get_content_type(), error.read()
 
 
-def run(url):
+def run(url, artifacts):
+    artifacts.mkdir(parents=True, exist_ok=True)
     cases = [
         ("uml", "visualize-contracts", {"sources": {"Counter.sol": SIMPLE}}, 200, "Counter"),
         ("storage", "visualize-storage", {"sources": {"Counter.sol": SIMPLE}, "file_name": "Counter.sol", "contract_name": "Counter"}, 200, "owner"),
@@ -56,6 +58,7 @@ def run(url):
             assert content_type == "application/json", (name, content_type)
             assert data.get("svg"), (name, data)
             svg = base64.b64decode(data["svg"], validate=True)
+            (artifacts / f"{name}.svg").write_bytes(svg)
             assert ET.fromstring(svg).tag == "{http://www.w3.org/2000/svg}svg", name
             assert expected_text in svg.decode(), name
             results[name] = {"status": status, "content_type": content_type, "keys": sorted(data), "svg_sha256": hashlib.sha256(svg).hexdigest()}
@@ -64,6 +67,7 @@ def run(url):
             assert expected_text in text, (name, text)
             # sol2uml 的錯誤包含服務每次產生的 tempfile 路徑；僅正規化該隨機部分。
             text = re.sub(r"/tmp/\.tmp[A-Za-z0-9]+", "/tmp/TEMP", text)
+            (artifacts / f"{name}.txt").write_text(text)
             results[name] = {"status": status, "content_type": content_type, "body": text}
         print(f"PASS {name}: HTTP {status}", flush=True)
     return results
@@ -75,10 +79,16 @@ if __name__ == "__main__":
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--baseline", type=Path)
     args = parser.parse_args()
-    actual = run(args.url)
+    actual = run(args.url, args.output.with_suffix(""))
     args.output.write_text(json.dumps(actual, indent=2, ensure_ascii=False) + "\n")
     if args.baseline:
         baseline = json.loads(args.baseline.read_text())
+        if actual != baseline:
+            print("".join(difflib.unified_diff(
+                json.dumps(baseline, indent=2, ensure_ascii=False).splitlines(keepends=True),
+                json.dumps(actual, indent=2, ensure_ascii=False).splitlines(keepends=True),
+                fromfile="baseline", tofile="candidate",
+            )), flush=True)
         assert actual == baseline, "與 baseline 的 HTTP／JSON／SVG 結果不相同"
         print("PASS baseline 比較：所有 HTTP／JSON／SVG SHA256 相同", flush=True)
     print(f"{len(actual)} tests passed, 0 failed", flush=True)
