@@ -2,8 +2,11 @@ version: '3.9'
 
 services:
   visualizer:
-    image: ghcr.io/blockscout/visualizer:${VISUALIZER_DOCKER_TAG:-latest}
-    pull_policy: always
+    image: ${VISUALIZER_IMAGE:-blockscout-visualizer:node22.23.4-v0.2.1}
+    build:
+      context: ../..
+      dockerfile: docker/visualizer/Dockerfile
+    pull_policy: missing
     platform: linux/amd64
     restart: always
     container_name: 'visualizer'

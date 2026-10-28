@@ -1,0 +1,92 @@
+name: Visualizer Node runtime
+
+on:
+  pull_request:
+    branches: [feature-numbers-v3]
+    paths:
+      - docker/visualizer/**
+      - docker-compose/services/visualizer.yml
+      - .github/workflows/visualizer-runtime.yml
+
+permissions:
+  contents: read
+
+jobs:
+  visualizer:
+    name: Visualizer Node 22 and API regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      ORIGINAL: ghcr.io/blockscout/visualizer@sha256:ffce88a765b0466824175cc8fed6e6b31d682310a96933b98451aefdfffecdc7
+    steps:
+      - uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            console.log(`Action runtime: ${process.version}`);
+            const [major, minor, patch] = process.versions.node.split('.').map(Number);
+            if (major !== 24 || minor < 22 || (minor === 22 && patch < 1)) {
+              throw new Error('Action runtime requires Node.js 24.22.1 or newer in Node 24');
+            }
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          persist-credentials: false
+      - name: 建置候選、確認 runtime 與既有程式逐檔相同
+        run: |
+          set -euo pipefail
+          image="blockscout-visualizer:${HEAD_SHA}"
+          docker build --pull --label "org.opencontainers.image.revision=${HEAD_SHA}" -f docker/visualizer/Dockerfile -t "$image" .
+          test "$(docker run --rm --entrypoint node "$image" --version)" = v22.23.4
+          test "$(docker run --rm --entrypoint sol2uml "$image" --version)" = 2.1.9
+          for entry in baseline candidate; do
+            target="$ORIGINAL"
+            if [ "$entry" = candidate ]; then target="$image"; fi
+            docker run --rm --entrypoint sh "$target" -ec '
+              sha256sum /usr/src/visualizer-server
+              cd /usr/local/lib/node_modules/sol2uml
+              find . -type f -print0 | sort -z | xargs -0 sha256sum
+              find . -type l -printf "%p %l\n" | sort
+            ' > "$RUNNER_TEMP/$entry-files.txt"
+          done
+          diff -u "$RUNNER_TEMP/baseline-files.txt" "$RUNNER_TEMP/candidate-files.txt"
+          docker compose -f docker-compose/docker-compose-all.yml config --format json > "$RUNNER_TEMP/compose.json"
+          jq -e --arg root "$PWD" '.services.visualizer | .build.context == $root and .build.dockerfile == "docker/visualizer/Dockerfile" and .restart == "always" and (.ports == null)' "$RUNNER_TEMP/compose.json"
+          docker image inspect "$image" > "$RUNNER_TEMP/visualizer-image.json"
+      - name: 原 Node16 與候選 Node22 使用相同 HTTP／SVG 回歸測試
+        run: |
+          set -euo pipefail
+          trap 'docker rm -f visualizer-baseline visualizer-candidate >/dev/null 2>&1 || true' EXIT
+          for entry in baseline candidate; do
+            target="$ORIGINAL"
+            if [ "$entry" = candidate ]; then target="blockscout-visualizer:${HEAD_SHA}"; fi
+            docker run -d --name "visualizer-$entry" --cpus=1 --memory=512m -p 127.0.0.1:18050:8050 "$target"
+            ready=false
+            for attempt in $(seq 1 30); do
+              if curl -fsS http://127.0.0.1:18050/health; then ready=true; break; fi
+              sleep 1
+            done
+            test "$ready" = true
+            baseline_args=()
+            if [ "$entry" = candidate ]; then baseline_args=(--baseline "$RUNNER_TEMP/baseline.json"); fi
+            python3 docker/visualizer/smoke.py --url http://127.0.0.1:18050 --output "$RUNNER_TEMP/$entry.json" "${baseline_args[@]}"
+            docker rm -f "visualizer-$entry"
+          done
+      - name: 保存已測試的同一候選映像
+        run: |
+          set -euo pipefail
+          docker save "blockscout-visualizer:${HEAD_SHA}" | gzip > "$RUNNER_TEMP/visualizer-image.tar.gz"
+          cd "$RUNNER_TEMP"
+          sha256sum visualizer-image.tar.gz > visualizer-image.tar.gz.sha256
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: visualizer-${{ env.HEAD_SHA }}
+          path: |
+            ${{ runner.temp }}/visualizer-image.tar.gz
+            ${{ runner.temp }}/visualizer-image.tar.gz.sha256
+            ${{ runner.temp }}/visualizer-image.json
+            ${{ runner.temp }}/baseline*.json
+            ${{ runner.temp }}/candidate*.json
+            ${{ runner.temp }}/*-files.txt
+          retention-days: 7
+          if-no-files-found: error
