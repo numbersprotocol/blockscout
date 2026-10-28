@@ -17,7 +17,10 @@ COPY apps/nft_media_handler/mix.exs ./apps/nft_media_handler/
 ENV MIX_ENV="prod"
 ENV MIX_HOME=/opt/mix
 ENV HEX_BUILDS_URL=https://cdn.jsdelivr.net/hex
-RUN mix local.hex --force
+# Use the official archive with its signed-manifest checksum; keep Elixir/OTP unchanged.
+RUN curl -fsSL https://builds.hex.pm/installs/1.16.0/hex-2.6.0.ez -o /tmp/hex.ez && \
+    echo "8c291beeb87ce01ae898e2657ec0da8f674346e29321447580d15a18945b0a95c72f806c4c64551861a5e41cbcbe0d93dff84f82e3d4d8c575fd6a797817b5a6  /tmp/hex.ez" | sha512sum -c - && \
+    mix archive.install /tmp/hex.ez --force && rm /tmp/hex.ez
 RUN mix do deps.get, local.rebar --force, deps.compile --skip-umbrella-children
 
 COPY config ./config
