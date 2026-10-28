@@ -16,6 +16,7 @@ COPY apps/nft_media_handler/mix.exs ./apps/nft_media_handler/
 
 ENV MIX_ENV="prod"
 ENV MIX_HOME=/opt/mix
+ENV HEX_BUILDS_URL=https://cdn.jsdelivr.net/hex
 RUN mix local.hex --force
 RUN mix do deps.get, local.rebar --force, deps.compile --skip-umbrella-children
 

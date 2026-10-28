@@ -18,6 +18,7 @@ permissions:
 
 env:
   HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  HEX_BUILDS_URL: https://cdn.jsdelivr.net/hex
 
 jobs:
   assets:

@@ -1,6 +1,6 @@
 # Since this is a copy of https://github.com/blockscout/devcontainer-elixir/blob/main/Dockerfile
 # So after successful testing this file, the original one must be updated as well.
-ARG VARIANT="1.17.3-erlang-27.1-debian-bullseye-20240926"
+ARG VARIANT="1.17.3-erlang-27.1-debian-bookworm-20240926"
 FROM hexpm/elixir:${VARIANT}
 
 # ARGs declared before FROM are not persisted beyond the FROM instruction.
@@ -22,6 +22,7 @@ ARG COMMON_SCRIPT_SOURCE="https://raw.githubusercontent.com/microsoft/vscode-dev
 # Options for setup nodejs
 ARG NODE_SCRIPT_SOURCE="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/main/script-library/node-debian.sh"
 ENV NVM_DIR=/usr/local/share/nvm
+ENV HEX_BUILDS_URL=https://cdn.jsdelivr.net/hex
 ENV NVM_SYMLINK_CURRENT=true
 ENV PATH=${NVM_DIR}/current/bin:${PATH}
 

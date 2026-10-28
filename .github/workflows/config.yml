@@ -33,6 +33,7 @@ on:
 
 env:
   NODE_VERSION: '22.23.4'
+  HEX_BUILDS_URL: https://cdn.jsdelivr.net/hex
   MIX_ENV: test
   OTP_VERSION: ${{ vars.OTP_VERSION || '27.1' }}
   ELIXIR_VERSION: ${{ vars.ELIXIR_VERSION || '1.17.3' }}
