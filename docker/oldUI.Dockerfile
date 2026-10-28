@@ -16,7 +16,11 @@ COPY apps/nft_media_handler/mix.exs ./apps/nft_media_handler/
 
 ENV MIX_ENV="prod"
 ENV MIX_HOME=/opt/mix
-RUN mix local.hex --force
+ENV HEX_BUILDS_URL=https://cdn.jsdelivr.net/hex
+# Use the official archive with its signed-manifest checksum; keep Elixir/OTP unchanged.
+RUN curl -fsSL https://builds.hex.pm/installs/1.16.0/hex-2.6.0.ez -o /tmp/hex.ez && \
+    echo "8c291beeb87ce01ae898e2657ec0da8f674346e29321447580d15a18945b0a95c72f806c4c64551861a5e41cbcbe0d93dff84f82e3d4d8c575fd6a797817b5a6  /tmp/hex.ez" | sha512sum -c - && \
+    mix archive.install /tmp/hex.ez --force && rm /tmp/hex.ez
 RUN mix do deps.get, local.rebar --force, deps.compile --skip-umbrella-children
 
 COPY config ./config
@@ -24,17 +28,28 @@ COPY rel ./rel
 COPY apps ./apps
 
 ##############################################################
+# Node stays in this build stage; only static assets and pure-JS solc are copied.
+FROM node:22.23.4-bookworm-slim AS node-assets
+
+WORKDIR /app
+COPY --from=builder-deps /app/deps/phoenix ./deps/phoenix
+COPY --from=builder-deps /app/deps/phoenix_html ./deps/phoenix_html
+COPY --from=builder-deps /app/apps/block_scout_web/assets ./apps/block_scout_web/assets
+COPY --from=builder-deps /app/apps/explorer/package*.json ./apps/explorer/
+
+RUN node --version && npm --version && \
+    cd apps/block_scout_web/assets && \
+    npm ci --no-audit --no-fund && \
+    npm run deploy && \
+    cd /app/apps/explorer && \
+    npm ci --no-audit --no-fund && \
+    test -z "$(find node_modules -name '*.node' -print -quit)"
+
+##############################################################
 FROM builder-deps AS builder-ui
 
-RUN apk --no-cache --update add nodejs npm && \
-    npm install npm@latest
-
-# Add blockscout npm deps
-RUN cd apps/block_scout_web/assets/ && \
-    npm install && \
-    npm run deploy && \
-    cd /app/apps/explorer/ && \
-    npm install
+COPY --from=node-assets /app/apps/block_scout_web/priv/static ./apps/block_scout_web/priv/static
+COPY --from=node-assets /app/apps/explorer/node_modules ./apps/explorer/node_modules
 
 RUN mix phx.digest
 
